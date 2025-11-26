@@ -11,7 +11,6 @@ namespace Library.DAL.Repositories
         private readonly IStorageService<Document> _docStorage;
         private readonly IStorageService<Loan> _loanStorage;
 
-        // Конструктор за замовчуванням (композиція) - щоб працювало в ConsoleApp
         public LibraryRepository()
         {
             _userStorage = new FileStorageService<User>("users.json");
@@ -19,7 +18,6 @@ namespace Library.DAL.Repositories
             _loanStorage = new FileStorageService<Loan>("loans.json");
         }
 
-        // Конструктор для ін'єкції (для розширюваності/тестів)
         public LibraryRepository(
             IStorageService<User> u,
             IStorageService<Document> d,

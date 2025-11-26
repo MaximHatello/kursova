@@ -15,9 +15,11 @@ namespace Library.ConsoleApp
 
         static void Main(string[] args)
         {
+            // Налаштування кодування для коректного відображення української мови
             Console.OutputEncoding = Encoding.UTF8;
             Console.InputEncoding = Encoding.UTF8;
 
+            // COMPOSITION ROOT: З'єднання BLL та DAL (Dependency Injection)
             ILibraryRepository repository = new LibraryRepository();
             _service = new LibraryService(repository);
 
@@ -49,8 +51,9 @@ namespace Library.ConsoleApp
             Console.WriteLine("1. Додати читача");
             Console.WriteLine("2. Переглянути всіх (опції сортування)");
             Console.WriteLine("3. Видалити читача");
-            Console.WriteLine("4. Пошук читачів");
-            Console.WriteLine("5. Назад");
+            Console.WriteLine("4. Оновити дані читача");
+            Console.WriteLine("5. Пошук читачів");
+            Console.WriteLine("6. Назад");
             Console.Write("Ваш вибір: ");
 
             try
@@ -73,8 +76,9 @@ namespace Library.ConsoleApp
                         PrintList(_service.GetUsersSorted(sort));
                         break;
                     case "3": _service.RemoveUser(ReadInt("ID читача для видалення")); break;
-                    case "4": PrintList(_service.SearchUsers(ReadStr("Ключове слово для пошуку"))); break;
-                    case "5": return;
+                    case "4": UpdateUser(); break;
+                    case "5": PrintList(_service.SearchUsers(ReadStr("Ключове слово для пошуку"))); break;
+                    case "6": return;
                 }
                 Console.WriteLine("\nОперація успішна.");
             }
@@ -82,6 +86,37 @@ namespace Library.ConsoleApp
             Console.WriteLine("\nНатисніть будь-яку клавішу для продовження...");
             Console.ReadKey();
         }
+
+        // --- МЕТОД ОНОВЛЕННЯ ДАНИХ ЧИТАЧА ---
+        private static void UpdateUser()
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("--- ОНОВЛЕННЯ ДАНИХ ЧИТАЧА ---");
+                var userId = ReadInt("ID читача для оновлення");
+
+                var existingUser = _service.GetUser(userId);
+                Console.WriteLine($"\nЗнайдено: {existingUser.FirstName} {existingUser.LastName} ({existingUser.AcademicGroup})");
+
+                var updatedUser = new User { Id = userId };
+
+                updatedUser.FirstName = ReadStr($"Нове Ім'я (поточно: {existingUser.FirstName})");
+                updatedUser.LastName = ReadStr($"Нове Прізвище (поточно: {existingUser.LastName})");
+                updatedUser.AcademicGroup = ReadStr($"Нова Група (поточно: {existingUser.AcademicGroup})");
+
+                updatedUser.FirstName = string.IsNullOrWhiteSpace(updatedUser.FirstName) ? existingUser.FirstName : updatedUser.FirstName;
+                updatedUser.LastName = string.IsNullOrWhiteSpace(updatedUser.LastName) ? existingUser.LastName : updatedUser.LastName;
+
+                _service.UpdateUser(updatedUser);
+                Console.WriteLine("\nДані читача успішно оновлено!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\nПомилка: {ex.Message}");
+            }
+        }
+
 
         // --- МЕНЮ ДОКУМЕНТІВ ---
         static void DocsMenu()
@@ -91,8 +126,9 @@ namespace Library.ConsoleApp
             Console.WriteLine("1. Додати документ");
             Console.WriteLine("2. Переглянути всі (опції сортування)");
             Console.WriteLine("3. Видалити документ");
-            Console.WriteLine("4. Пошук документів");
-            Console.WriteLine("5. Назад");
+            Console.WriteLine("4. Оновити дані документа");
+            Console.WriteLine("5. Пошук документів");
+            Console.WriteLine("6. Назад");
             Console.Write("Ваш вибір: ");
 
             try
@@ -115,8 +151,9 @@ namespace Library.ConsoleApp
                         PrintList(_service.GetDocumentsSorted(sort));
                         break;
                     case "3": _service.RemoveDocument(ReadInt("ID документа для видалення")); break;
-                    case "4": PrintList(_service.SearchDocuments(ReadStr("Ключове слово для пошуку"))); break;
-                    case "5": return;
+                    case "4": UpdateDocument(); break;
+                    case "5": PrintList(_service.SearchDocuments(ReadStr("Ключове слово для пошуку"))); break;
+                    case "6": return;
                 }
                 Console.WriteLine("\nОперація успішна.");
             }
@@ -124,6 +161,47 @@ namespace Library.ConsoleApp
             Console.WriteLine("\nНатисніть будь-яку клавішу для продовження...");
             Console.ReadKey();
         }
+
+        // --- МЕТОД ОНОВЛЕННЯ ДАНИХ ДОКУМЕНТА ---
+        private static void UpdateDocument()
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("--- ОНОВЛЕННЯ ДАНИХ ДОКУМЕНТА ---");
+                var documentId = ReadInt("ID документа для оновлення");
+
+                var existingDocument = _service.GetDocument(documentId);
+                Console.WriteLine($"\nЗнайдено: {existingDocument.Title} (Автор: {existingDocument.Author}, Рік: {existingDocument.Year})");
+
+                var updatedDocument = new Document { Id = documentId };
+
+                updatedDocument.Title = ReadStr($"Нова Назва (поточно: {existingDocument.Title})");
+                updatedDocument.Author = ReadStr($"Новий Автор (поточно: {existingDocument.Author})");
+
+                var newYearString = ReadStr($"Новий Рік (поточно: {existingDocument.Year})");
+
+                updatedDocument.Title = string.IsNullOrWhiteSpace(updatedDocument.Title) ? existingDocument.Title : updatedDocument.Title;
+                updatedDocument.Author = string.IsNullOrWhiteSpace(updatedDocument.Author) ? existingDocument.Author : updatedDocument.Author;
+
+                if (int.TryParse(newYearString, out int newYear) && newYear != 0)
+                {
+                    updatedDocument.Year = newYear;
+                }
+                else
+                {
+                    updatedDocument.Year = existingDocument.Year;
+                }
+
+                _service.UpdateDocument(updatedDocument);
+                Console.WriteLine("\nДані документа успішно оновлено!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\nПомилка: {ex.Message}");
+            }
+        }
+
 
         // --- МЕНЮ ВИДАЧІ ---
         static void LoansMenu()

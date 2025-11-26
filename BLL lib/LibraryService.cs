@@ -13,7 +13,7 @@ namespace Library.BLL.Services
         private List<User> _users;
         private List<Document> _documents;
         private List<Loan> _loans;
-        private const int MAX_LOANS = 4; // n < 5
+        private const int MAX_LOANS = 4;
 
         public LibraryService(ILibraryRepository repository)
         {
@@ -63,7 +63,6 @@ namespace Library.BLL.Services
             existing.FirstName = user.FirstName;
             existing.LastName = user.LastName;
             existing.AcademicGroup = user.AcademicGroup;
-            existing.Email = user.Email;
             SaveData();
         }
 
@@ -114,9 +113,6 @@ namespace Library.BLL.Services
             var existing = GetDocument(doc.Id);
             existing.Title = doc.Title;
             existing.Author = doc.Author;
-            existing.Type = doc.Type;
-            existing.Year = doc.Year;
-            existing.ISBN = doc.ISBN;
             SaveData();
         }
 
@@ -159,7 +155,7 @@ namespace Library.BLL.Services
                 UserId = userId,
                 DocumentId = docId,
                 LoanDate = DateTime.Now,
-                DueDate = DateTime.Now.AddDays(14)
+                DueDate = DateTime.Now.AddDays(30)
             };
 
             _loans.Add(loan);

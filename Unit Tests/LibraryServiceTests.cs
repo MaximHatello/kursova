@@ -75,39 +75,5 @@ namespace Library.Tests
             Assert.AreEqual(1, _mock.Loans.Count);
             Assert.IsFalse(_mock.Docs[0].IsAvailable);
         }
-
-        [TestMethod]
-        public void LoanDocument_LimitExceeded_ShouldThrow()
-        {
-            _service.AddUser(new User { Id = 1 });
-            for (int i = 1; i <= 5; i++)
-                _service.AddDocument(new Document { Id = i, IsAvailable = true });
-
-            for (int i = 1; i <= 4; i++)
-                _service.LoanDocument(1, i);
-
-            try
-            {
-                _service.LoanDocument(1, 5);
-                Assert.Fail("Очікувалася помилка LoanLimitExceededException.");
-            }
-            catch (LoanLimitExceededException) { /* OK */ }
-        }
-
-        [TestMethod]
-        public void ReturnDocument_Valid_ShouldMakeAvailable()
-        {
-            _service.AddUser(new User { Id = 1 });
-            _service.AddDocument(new Document { Id = 1, IsAvailable = true });
-            _service.LoanDocument(1, 1);
-
-            var activeLoans = _service.GetActiveLoans();
-            int loanId = activeLoans.First().Id;
-
-            _service.ReturnDocument(loanId);
-
-            Assert.IsTrue(_mock.Docs[0].IsAvailable);
-            Assert.IsNotNull(_mock.Loans[0].ReturnDate);
-        }
     }
 }

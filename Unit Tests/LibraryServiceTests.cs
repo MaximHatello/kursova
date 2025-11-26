@@ -33,10 +33,10 @@ namespace Library.Tests
         [TestMethod]
         public void AddUser_DuplicateId_ShouldThrow()
         {
-            // Arrange
+
             _service.AddUser(new User { Id = 1, FirstName = "Original" });
 
-            // Act & Assert (Класичний підхід)
+
             try
             {
                 _service.AddUser(new User { Id = 1, FirstName = "Duplicate" });
@@ -44,7 +44,7 @@ namespace Library.Tests
             }
             catch (DuplicateEntityException)
             {
-                // Успіх! Ми спіймали потрібну помилку.
+                
             }
             catch (Exception ex)
             {

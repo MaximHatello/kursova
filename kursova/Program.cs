@@ -15,11 +15,11 @@ namespace Library.ConsoleApp
 
         static void Main(string[] args)
         {
-            // Налаштування кодування для коректного відображення української мови
+
             Console.OutputEncoding = Encoding.UTF8;
             Console.InputEncoding = Encoding.UTF8;
 
-            // COMPOSITION ROOT: З'єднання BLL та DAL (Dependency Injection)
+
             ILibraryRepository repository = new LibraryRepository();
             _service = new LibraryService(repository);
 
